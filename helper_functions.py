@@ -60,7 +60,7 @@ def create_directory(name):
 		if not os.path.exists(name):
 			os.makedirs(name)
 			logging.info('Created directory: {}'.format(name))
-	except Exception, e:
+	except Exception as e:
 		logging.error('[createDirectory] : {}'.format(e))
 		exit(1)
 
@@ -84,7 +84,7 @@ def read_directory(directory):
 	
 	try:
 		return glob2.glob(os.path.join( directory, '**' , '*.*'))
-	except Exception, e:
+	except Exception as e:
 		logging.error('[read_directory] : {}'.format(e))
 		exit(1)
 
@@ -122,7 +122,7 @@ def save_csv(data, name, folder):
 			writer = csv.writer(f, lineterminator='\n')
 			writer.writerows(data)
 
-	except Exception, e:
+	except Exception as e:
 		logging.error('[save_csv] : {}'.format(e))
 		exit(1)
 
@@ -158,7 +158,7 @@ def read_csv(filename, folder = None):
 			reader = csv.reader(f)
 			# return csv as list
 			return list(reader)
-	except Exception, e:
+	except Exception as e:
 		logging.error('Unable to open CSV {} : {}'.format(filename, str(e)))
 
 
@@ -197,7 +197,7 @@ def save_dic_to_csv(dic, file_name, folder):
 			for k, v in dic.items():
 				writer.writerow([k, v])
 
-	except Exception, e:
+	except Exception as e:
 		logging.error('[save_dic_to_csv] : {}'.format(e))
 		exit(1)
 
@@ -224,7 +224,7 @@ def pdf_to_plain(pdf_file):
 		# use textract to convert PDF to plain text
 		return textract.process(pdf_file, encoding='utf8')
 
-	except Exception, e:
+	except Exception as e:
 		logging.error('[{}] : {}'.format(sys._getframe().f_code.co_name,e))
 		return None
 
@@ -273,7 +273,7 @@ def full_text_preprocessing(content):
 		content = content.replace(u'\ufb04', "ffl") # ffl ligature
 
 		return content
-	except Exception, e:
+	except Exception as e:
 		logging.error('[{}] : {}'.format(sys._getframe().f_code.co_name,e))
 		exit()
 
@@ -307,12 +307,12 @@ def save_plain_text(plain_text, file_name, folder):
 		file_name = os.path.join(folder, file_name + '.txt')
 
 		# save data to folder with name
-		with open(file_name, "w") as f:
+		with open(file_name, "wb") as f:
 
 			# write plain text to file
 			f.write(plain_text.encode('utf-8'))
 
-	except Exception, e:
+	except Exception as e:
 		logging.error('[save_plain_text] : {}'.format(e))
 		exit(1)
 
@@ -341,7 +341,7 @@ def read_plain_text(file_name):
 			# read the content and return
 			return f.read()
 
-	except Exception, e:
+	except Exception as e:
 		logging.error('[read_plain_text] : {}'.format(e))
 		exit(1)
 
@@ -349,15 +349,16 @@ def setup_spacy():
 
 	# setting up spacy and loading an English corpus
 	nlp = spacy.load('en')
-
+	
+	nlp.max_length = 15000000 
 	# load the same corpus but in a different way (depends if there is a symbolic link)
 	#nlp = spacy.load('en_core_web_sm')
 
 	# add some more stopwords; apparently spacy does not contain all the stopwords
 	for word in set(stopwords.words('english')):
 
-		nlp.Defaults.stop_words.add(unicode(word))
-		nlp.Defaults.stop_words.add(unicode(word.title()))
+		nlp.Defaults.stop_words.add(str(word))
+		nlp.Defaults.stop_words.add(str(word.title()))
 
 	for word in nlp.Defaults.stop_words:
 		lex = nlp.vocab[word]
@@ -382,7 +383,7 @@ def word_tokenizer(text):
 	try:
 		# Lemmatize tokens, remove punctuation, remove single character tokens and remove stopwords.
 		return  [token.lemma_ for token in text if token.is_alpha and not token.is_stop and len(token) > 1]
-	except Exception, e:
+	except Exception as e:
 		logging.error('[{}] : {}'.format(sys._getframe().f_code.co_name,e))
 		exit(1)
 

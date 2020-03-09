@@ -38,11 +38,11 @@ from joblib import Parallel
 from joblib import delayed
 
 # switches (turn on what needs to be executed)
-perform_pdf_to_plain = False
-perform_tokenization = False
-perform_topic_inference = False
-plot_topics_in_documents = False
-perform_document_similarity = False
+perform_pdf_to_plain = True
+perform_tokenization = True
+perform_topic_inference = True
+plot_topics_in_documents = True
+perform_document_similarity = True
 plot_document_similarity = True
 
 
@@ -55,7 +55,7 @@ plot_document_similarity = True
 		-	Narrow lenses for capturing the complexity of fisheries: A topic analysis of fisheries science from 1990 to 2016
 		-	https://doi.org/10.1111/faf.12280
 """
-lda_type = 2
+lda_type = 1
 
 
 """
@@ -363,6 +363,8 @@ if __name__ == "__main__":
 
 		# get dendogram linkages
 		linkages = shc.linkage(df, method='average')
+		## linkages = shc.linkage(df, method='single')
+
 		
 		# plot dendogram
 		dendrogram = shc.dendrogram(linkages, labels = df.columns, orientation = 'right', distance_sort = True, show_contracted = True)
